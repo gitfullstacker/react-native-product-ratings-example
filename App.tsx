@@ -1,116 +1,176 @@
-import React, {useState} from 'react';
-import {
-  SafeAreaView,
-  StyleSheet,
-  View,
-  Text,
-  ScrollView,
-  Button,
-} from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet, Text, ScrollView, SafeAreaView } from 'react-native';
+import StarRating from '../../src/components/StarRating';
+import RatingImage from '../../src/components/RatingImage';
 
-import {StarRating, Rating, TapRating} from 'react-native-product-ratings';
-
-export default function App() {
-  const [starRating, setStarRating] = useState(3.5);
-  const [swipeRating, setSwipeRating] = useState(0);
-  const [tapRating, setTapRating] = useState(0);
+const App = () => {
+  const [ratings, setRatings] = useState({
+    star: 3.5,
+    heart: 0,
+    bell: 2,
+    rocket: 4,
+    airbnb: 5
+  });
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <Text style={styles.header}>react-native-product-ratings</Text>
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView contentContainerStyle={styles.container}>
+        
+        {/* Default Star Rating */}
+        <RatingDemo 
+          title="Standard Stars"
+          type="star"
+          rating={ratings.star}
+          tintColor="#FFD700"
+          onRate={(val) => setRatings({...ratings, star: val})}
+        />
 
-        <View style={styles.demoContainer}>
-          <Text style={styles.demoTitle}>Star Rating</Text>
-          <Text style={styles.demoSubtitle}>Rating: {starRating}</Text>
-          <StarRating
-            allowHalfRating
-            defaultRating={starRating}
-            size={40}
-            selectedColor="#FFD700"
-            onFinishRating={setStarRating}
-          />
-          <View style={styles.buttonRow}>
-            <Button title="Reset" onPress={() => setStarRating(0)} />
-            <Button title="Set to 5" onPress={() => setStarRating(5)} />
-          </View>
-        </View>
+        {/* Heart Rating */}
+        <RatingDemo 
+          title="Heart Rating"
+          type="heart"
+          rating={ratings.heart}
+          tintColor="#FF6B6B"
+          unselectedColor="#FFC0CB"
+          onRate={(val) => setRatings({...ratings, heart: val})}
+          showLabels
+          labels={['Hate', 'Dislike', 'Okay', 'Like', 'Love']}
+        />
 
-        <View style={styles.demoContainer}>
-          <Text style={styles.demoTitle}>Swipe Rating</Text>
-          <Text style={styles.demoSubtitle}>Swipe horizontally to rate</Text>
-          <Rating
-            showRating
-            size={45}
-            defaultRating={swipeRating}
-            selectedColor="#FF8C00"
-            onFinishRating={setSwipeRating}
-          />
-        </View>
+        {/* Bell Rating */}
+        <RatingDemo 
+          title="Bell Rating"
+          type="bell"
+          rating={ratings.bell}
+          tintColor="#9C27B0"
+          onRate={(val) => setRatings({...ratings, bell: val})}
+          allowHalf
+        />
 
-        <View style={styles.demoContainer}>
-          <Text style={styles.demoTitle}>Tap Rating with Labels</Text>
-          <TapRating
-            count={5}
-            defaultRating={tapRating}
-            size={35}
-            showRatingText
-            ratingLabels={{
-              1: 'Poor',
-              2: 'Below Average',
-              3: 'Good',
-              4: 'Very Good',
-              5: 'Excellent',
-            }}
-            selectedColor="#4CAF50"
-            onFinishRating={setTapRating}
-          />
-        </View>
+        {/* Rocket Rating */}
+        <RatingDemo 
+          title="Rocket Rating" 
+          type="rocket"
+          rating={ratings.rocket}
+          tintColor="#FF9800"
+          onRate={(val) => setRatings({...ratings, rocket: val})}
+        />
+
+        {/* Airbnb-style Rating */}
+        <RatingDemo 
+          title="Airbnb-style"
+          type="airbnb"
+          rating={ratings.airbnb}
+          tintColor="#FF5A5F"
+          onRate={(val) => setRatings({...ratings, airbnb: val})}
+        />
+
+        {/* Airbnb-style Rating */}
+        <RatingDemo 
+          title="Airbnb-style"
+          type="airbnb"
+          rating={ratings.airbnb}
+          tintColor="#FF5A5F"
+          onRate={(val) => setRatings({...ratings, airbnb: val})}
+          readonly
+        />
       </ScrollView>
     </SafeAreaView>
   );
+};
+
+export interface RatingDemoProps {
+  title: string;
+  type: 'star' | 'heart' | 'bell' | 'rocket' | 'airbnb';
+  rating: number;
+  tintColor: string;
+  unselectedColor?: string;
+  onRate: (rating: number) => void;
+  allowHalf?: boolean;
+  readonly?: boolean;
+  showLabels?: boolean;
+  labels?: string[];
 }
 
+// Reusable rating component
+const RatingDemo = ({
+  title,
+  type,
+  rating,
+  tintColor,
+  unselectedColor = '#BDC3C7',
+  onRate,
+  allowHalf = false,
+  readonly = false,
+  showLabels = false,
+  labels = []
+}: RatingDemoProps) => (
+  <View style={styles.section}>
+    <Text style={styles.sectionTitle}>{title}</Text>
+    <StarRating
+      count={5}
+      defaultRating={rating}
+      size={40}
+      selectedColor={tintColor}
+      allowHalfRating={allowHalf}
+      readonly={readonly}
+      onFinishRating={onRate}
+      RatingImage={(props) => (
+        <RatingImage
+          {...props}
+          type={type}
+          unselectedColor={unselectedColor}
+        />
+      )}
+    />
+    {showLabels && (
+      <View style={styles.labels}>
+        {labels.map((label, i) => (
+          <Text key={i} style={styles.labelText}>
+            {label}
+          </Text>
+        ))}
+      </View>
+    )}
+    <Text style={styles.ratingText}>
+      Current: {rating} {readonly && '(Readonly)'}
+    </Text>
+  </View>
+);
+
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#F8F9FA',
   },
-  scrollContainer: {
+  container: {
     padding: 16,
   },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginVertical: 20,
-    color: '#333',
-  },
-  demoContainer: {
-    marginBottom: 30,
-    backgroundColor: '#FFFFFF',
+  section: {
+    marginBottom: 24,
     padding: 16,
+    backgroundColor: 'white',
     borderRadius: 8,
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
   },
-  demoTitle: {
+  sectionTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 8,
-    color: '#333',
-  },
-  demoSubtitle: {
-    fontSize: 14,
-    color: '#666',
+    fontWeight: '600',
     marginBottom: 12,
   },
-  buttonRow: {
+  labels: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginTop: 16,
+    justifyContent: 'space-between',
+    marginTop: 8,
+  },
+  labelText: {
+    fontSize: 12,
+    color: '#7F8C8D',
+  },
+  ratingText: {
+    marginTop: 8,
+    color: '#34495E',
+    textAlign: 'center',
   },
 });
+
+export default App;
