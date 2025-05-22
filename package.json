@@ -1,6 +1,6 @@
 {
-  "name": "ProductRatingsExample",
-  "version": "0.0.1",
+  "name": "react-native-product-ratings-example",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "android": "react-native run-android",

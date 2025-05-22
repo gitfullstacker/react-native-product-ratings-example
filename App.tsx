@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Text, ScrollView, SafeAreaView } from 'react-native';
-import StarRating from '../../src/components/StarRating';
-import RatingImage from '../../src/components/RatingImage';
+import StarRating from '../src/components/StarRating';
+import RatingImage from '../src/components/RatingImage';
 
 const App = () => {
   const [ratings, setRatings] = useState({
